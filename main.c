@@ -3,10 +3,27 @@
 #define ERRORLINESAMOUNT 10
 
 
+// round brackets and square brackets cases are almost identical 
+/* void processBrackets(char c, char openBracket, char closeBracket)
+{
+	static bool toBeTerminated = false;
+	switch(c)
+	{
+		case openBracket:
+			toBeTerminated = true;
+			break;
+			
+		case closeBracket:
+			
+			break;
+	}
+}	*/ 
+
+
 int main()
 {
 	char c;
-	bool isEverythingFine = true, parToBeTerminated = false;
+	bool isEverythingFine = true, parToBeTerminated = false, squareToBeTerminated = false;
 	int bracesToBeTerminated = 0;
 	int nl = 1, i = 0;					// i - to access errorlines[] array 
 	int errorLines[ERRORLINESAMOUNT]; 	// array of integers representing lines where a curly brackets error occured
@@ -64,7 +81,34 @@ int main()
 				isEverythingFine = false;
 				break;
 			}
+		
+		//the same logic as with round brackets only add ';' case
+		case '[':
+			squareToBeTerminated = true;
+			break;
 			
+		case ']':
+			if (squareToBeTerminated)
+			{
+				squareToBeTerminated = false;
+				break;
+			}
+			else 
+			{
+				printf("There isn't open square bracket on line %d\n", nl);
+				isEverythingFine = false;
+				break;
+			}
+
+		case ';':
+			if (squareToBeTerminated)
+			{
+				printf("Square brackets should be closed on line %d\n", nl);
+				isEverythingFine = false;
+				squareToBeTerminated = false;
+			}
+			break;
+		
 		default:
 			;
 		}
@@ -75,6 +119,7 @@ int main()
 		isEverythingFine = false;
 		for (int j = 0; j < i; j++)
 			printf("No matching close curly bracket on line %d\n", errorLines[j]);
+		
 	}
 	
 	if (isEverythingFine)
