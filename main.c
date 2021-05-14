@@ -3,28 +3,13 @@
 #define ERRORLINESAMOUNT 10
 
 
-// round brackets and square brackets cases are almost identical 
-/* void processBrackets(char c, char openBracket, char closeBracket)
-{
-	static bool toBeTerminated = false;
-	switch(c)
-	{
-		case openBracket:
-			toBeTerminated = true;
-			break;
-			
-		case closeBracket:
-			
-			break;
-	}
-}	*/ 
-
-
 int main()
 {
 	char c;
-	bool isEverythingFine = true, parToBeTerminated = false, squareToBeTerminated = false;
-	int bracesToBeTerminated = 0;
+	bool isEverythingFine = true;
+	bool parToBeClosed = false, squareToBeClosed = false;
+	bool singleQuoteWasMet = false, doubleQuoteWasMet = false;
+	int bracesToBeClosed = 0;
 	int nl = 1, i = 0;					// i - to access errorlines[] array 
 	int errorLines[ERRORLINESAMOUNT]; 	// array of integers representing lines where a curly brackets error occured
 	
@@ -36,13 +21,13 @@ int main()
 		switch(c)
 		{
 		case '(':
-			parToBeTerminated = true;
+			parToBeClosed = true;
 			break;
 			
 		case ')':
-			if (parToBeTerminated)
+			if (parToBeClosed)
 			{
-				parToBeTerminated = false;
+				parToBeClosed = false;
 				break;
 			}
 			else 
@@ -53,25 +38,37 @@ int main()
 			}
 
 		case '\n':
-			if (parToBeTerminated)
+			if (parToBeClosed)
 			{
 				printf("Round brackets should be closed on line %d\n", nl);
 				isEverythingFine = false;
-				parToBeTerminated = false;
+				parToBeClosed = false;
+			}
+			if (singleQuoteWasMet)
+			{
+				printf("Single quotes should be closed on line %d\n", nl);
+				isEverythingFine = false;
+				singleQuoteWasMet = false;
+			}
+			if (doubleQuoteWasMet)
+			{
+				printf("Double quotes should be closed on line %d\n", nl);
+				isEverythingFine = false;
+				doubleQuoteWasMet = false;
 			}
 			nl++;
 			break;
 		
 		case '{':
-			bracesToBeTerminated++;
+			bracesToBeClosed++;
 			errorLines[i] = nl;
 			i++;
 			break;
 		
 		case '}':
-			if (bracesToBeTerminated)
+			if (bracesToBeClosed)
 			{
-				bracesToBeTerminated--;
+				bracesToBeClosed--;
 				i--;
 				break;
 			}
@@ -84,13 +81,13 @@ int main()
 		
 		//the same logic as with round brackets only add ';' case
 		case '[':
-			squareToBeTerminated = true;
+			squareToBeClosed = true;
 			break;
 			
 		case ']':
-			if (squareToBeTerminated)
+			if (squareToBeClosed)
 			{
-				squareToBeTerminated = false;
+				squareToBeClosed = false;
 				break;
 			}
 			else 
@@ -101,12 +98,26 @@ int main()
 			}
 
 		case ';':
-			if (squareToBeTerminated)
+			if (squareToBeClosed)
 			{
 				printf("Square brackets should be closed on line %d\n", nl);
 				isEverythingFine = false;
-				squareToBeTerminated = false;
+				squareToBeClosed = false;
 			}
+			break;
+			
+		case '\'':
+			if (singleQuoteWasMet)
+				singleQuoteWasMet = false;
+			else
+				singleQuoteWasMet = true;
+			break;
+		
+		case '\"':
+			if (doubleQuoteWasMet)
+				doubleQuoteWasMet = false;
+			else
+				doubleQuoteWasMet = true;
 			break;
 		
 		default:
@@ -114,7 +125,7 @@ int main()
 		}
 	}
 	
-	if (bracesToBeTerminated)
+	if (bracesToBeClosed)
 	{
 		isEverythingFine = false;
 		for (int j = 0; j < i; j++)
