@@ -38,12 +38,6 @@ int main()
 			}
 
 		case '\n':
-			if (parToBeClosed)
-			{
-				printf("Round brackets should be closed on line %d\n", nl);
-				isEverythingFine = false;
-				parToBeClosed = false;
-			}
 			if (singleQuoteWasMet)
 			{
 				printf("Single quotes should be closed on line %d\n", nl);
@@ -98,6 +92,12 @@ int main()
 			}
 
 		case ';':
+			if (parToBeClosed)
+			{
+				printf("Round brackets should be closed on line %d\n", nl);
+				isEverythingFine = false;
+				parToBeClosed = false;
+			}
 			if (squareToBeClosed)
 			{
 				printf("Square brackets should be closed on line %d\n", nl);
